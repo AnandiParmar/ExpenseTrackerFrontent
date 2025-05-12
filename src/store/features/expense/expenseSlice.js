@@ -1,4 +1,6 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { addExpense, deleteExpense, getAllExpense } from "./expenseActions";
+import { toast } from "react-toastify";
 
 const initialState = {
   expense: [],
@@ -9,29 +11,47 @@ export const expenseSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    addExpense: (state, action) => {
-      state.expense = [...state.expense, { ...action.payload, id: nanoid() }];
-    },
-    updateExpens: (state, action) => {
-      const { id, ...changes } = action.payload;
-      const index = state.expense.findIndex((item) => item.id === id);
-      if (index !== -1) {
-        state.expense[index] = { ...state.expense[index], ...changes };
-      }
-    },
     delExpense: (state, action) => {
       let data = JSON.parse(JSON.stringify(state.expense));
-      state.expense = data.filter((elem) => elem.id !== action.payload);
+      state.expense = data.filter((elem) => elem._id != action.payload);
     },
     totalExpenses: (state) => {
-      state.TotalExpense = state.expense.reduce((acc, curr) => {
+      state.TotalExpense = state?.expense?.reduce((acc, curr) => {
         acc = Number(acc) + Number(curr.amount);
         return acc;
       }, 0);
     },
   },
+  extraReducers: (builder) => {
+    //add-expense
+    builder.addCase(addExpense.pending, () => console.log("pending"));
+
+    builder.addCase(addExpense.fulfilled, (state, action) => {
+      console.log(state, action);
+      toast.success("Expense Added Succesfully");
+    });
+
+    //get all expense
+
+    builder.addCase(getAllExpense.pending, () => console.log("pending"));
+
+    builder.addCase(getAllExpense.fulfilled, (state, action) => {
+      state.expense = action.payload;
+    });
+
+    builder.addCase(getAllExpense.rejected, (state, action) => {
+      console.log(action);
+    });
+
+    //delete expense
+
+    builder.addCase(deleteExpense.pending, () => console.log("pending"));
+
+    builder.addCase(deleteExpense.fulfilled, (state, action) => {
+      toast.success(action?.payload?.message);
+    });
+  },
 });
 
-export const { addExpense, delExpense, updateExpens, totalExpenses } =
-  expenseSlice.actions;
+export const { delExpense, totalExpenses } = expenseSlice.actions;
 export default expenseSlice.reducer;

@@ -1,8 +1,8 @@
 import React from "react";
 import Table from "@/components/common/Table";
 import { useSelector, useDispatch } from "react-redux";
-import { delExpense } from "@/store/features/expense/expenseSlice";
 import { useNavigate } from "react-router-dom";
+import { deleteExpense } from "@/store/features/expense/expenseActions";
 
 function AllExpenses() {
   const allexpense = useSelector((state) => state.expense.expense);
@@ -10,17 +10,17 @@ function AllExpenses() {
   const navigate = useNavigate();
 
   function handleDelete(id) {
-    dispatch(delExpense(id));
+    dispatch(deleteExpense({ id, dispatch }));
   }
 
-  function handleEdit(data) {
+  function handleEdit(id, data) {
     navigate("/add-expense", {
-      state: { data, btnText: "EDIT EXPENSE" },
+      state: { id, data, btnText: "EDIT EXPENSE" },
     });
   }
 
   const columns = [
-    { label: "Title", key: "expense" },
+    { label: "Title", key: "title" },
     { label: "Amount", key: "amount" },
     { label: "Date", key: "date" },
     {
@@ -28,13 +28,13 @@ function AllExpenses() {
       render: (row) => (
         <div>
           <button
-            onClick={() => handleEdit(row)}
+            onClick={() => handleEdit(row._id, row)}
             className="py-2 text-blue-500 hover:underline"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDelete(row.id)}
+            onClick={() => handleDelete(row._id)}
             className="px-2 py-2 text-red-500 hover:underline"
           >
             Delete
@@ -44,7 +44,7 @@ function AllExpenses() {
     },
   ];
 
-  const totalAmount = allexpense.reduce(
+  const totalAmount = allexpense?.reduce(
     (acc, curr) => acc + Number(curr.amount),
     0
   );

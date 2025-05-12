@@ -1,4 +1,6 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { addIncome, getTotalIncome } from "./incomeAction";
+import { toast } from "react-toastify";
 
 const initialState = {
   income: [],
@@ -9,18 +11,31 @@ const incomeSlice = createSlice({
   name: "income",
   initialState,
   reducers: {
-    addIncome: (state, action) => {
-      state.income = [...state.income, { ...action.payload, id: nanoid() }];
-    },
     totalIncome: (state) => {
       state.TotalIncome = state.income.reduce((acc, curr) => {
-        acc = Number(acc) + Number(curr.amount);
+        acc = Number(acc) + Number(curr.income_amount);
         console.log(acc);
         return acc;
       }, 0);
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(addIncome.pending, () => console.log("pending"));
+
+    builder.addCase(addIncome.fulfilled, (state, action) => {
+      toast.success(action?.payload?.message);
+    });
+
+    //all - income
+
+    builder.addCase(getTotalIncome.pending, () => console.log("pending"));
+
+    builder.addCase(getTotalIncome.fulfilled, (state, action) => {
+      console.log("get Total Income reducer");
+      state.income = action?.payload;
+    });
+  },
 });
 
-export const { addIncome, totalIncome } = incomeSlice.actions;
+export const { totalIncome } = incomeSlice.actions;
 export default incomeSlice.reducer;

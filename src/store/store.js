@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 import userSlice from "./features/user/userSlice";
 import expenseSlice from "./features/expense/expenseSlice";
 import IncomeSlice from "./features/income/IncomeSlice";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 
 const reducers = combineReducers({
   user: userSlice,
@@ -15,7 +15,7 @@ const persistConfig = {
   key: "root",
   storage,
   blackList: [],
-  whiteList: ["user", "expense", "income"],
+  whiteList: ["user"],
 };
 
 const persistedReducers = persistReducer(persistConfig, reducers);

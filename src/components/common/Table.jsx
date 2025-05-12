@@ -13,7 +13,7 @@ function Table({ columns, data }) {
         </tr>
       </thead>
       <tbody>
-        {data.map((row, idx) => (
+        {data?.map((row, idx) => (
           <tr key={idx} className="border-b border-gray-400 dark:bg-gray-800">
             {columns.map((col, i) => (
               <td key={i} className="py-2 px-4">
